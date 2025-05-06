@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos Detallados - Sistema de Inventario</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Productos Detallados</h1>
+        <p class="text-muted">Fecha actual: {{ now.strftime('%d/%m/%Y') }}</p>
+        
+        <!-- Menú de navegación -->
+        <nav class="mb-4">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('productos_detallados') }}">Productos detallados</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Consultas avanzadas</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('productos_por_precio', order='ASC') }}">Productos por precio (ASC)</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('productos_por_precio', order='DESC') }}">Productos por precio (DESC)</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('valor_por_categoria') }}">Valor por categoría</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#agregarProductoModal">Agregar producto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('productos_por_categoria') }}">Productos por Categoría</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Explicación JOIN -->
+        <div class="alert alert-info mb-4">
+            <h4 class="alert-heading">Consulta JOIN</h4>
+            <p>Esta página muestra los productos con detalles de su categoría y proveedor utilizando consultas JOIN para relacionar múltiples tablas.</p>
+            <hr>
+            <p class="mb-0"><strong>SQL usado:</strong> SELECT p.id, p.numero_serie, p.nombre, p.cantidad, p.precio, c.nombre as categoria, pv.nombre as proveedor FROM productos p LEFT JOIN categorias c ON p.categoria_id = c.id LEFT JOIN proveedores pv ON p.proveedor_id = pv.id</p>
+        </div>
+        
+        <!-- Tabla de productos con JOIN -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Número Serie</th>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Categoría</th>
+                        <th>Proveedor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto[0] }}</td>
+                        <td>{{ producto[1] }}</td>
+                        <td>{{ producto[2] }}</td>
+                        <td>{{ producto[3] }}</td>
+                        <td>{{ "$%.2f"|format(producto[4]) }}</td>
+                        <td>{{ producto[5] if producto[5] else 'Sin categoría' }}</td>
+                        <td>{{ producto[6] if producto[6] else 'Sin proveedor' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Volver al inicio</a>
+    </div>
+
+            <!-- Modal para agregar producto -->
+            <div class="modal fade" id="agregarProductoModal" tabindex="-1" aria-labelledby="agregarProductoModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="agregarProductoModalLabel">Agregar Nuevo Producto</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ url_for('agregar_producto') }}" method="post">
+                                <div class="mb-3">
+                                    <label for="numero_serie" class="form-label">Número de Serie</label>
+                                    <input type="text" class="form-control" id="numero_serie" name="numero_serie" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cantidad" class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad" min="0" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="precio" class="form-label">Precio</label>
+                                    <input type="number" class="form-control" id="precio" name="precio" min="0" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="categoria_id" class="form-label">Categoría ID</label>
+                                    <input type="number" class="form-control" id="categoria_id" name="categoria_id" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="proveedor_id" class="form-label">Proveedor ID</label>
+                                    <input type="number" class="form-control" id="proveedor_id" name="proveedor_id" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="descripcion" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Movimientos de Producto - PDF</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Historial de Movimientos</h1>
+    <div>
+        <h2>Detalles del Producto</h2>
+        <p><strong>ID:</strong> {{ producto.id }}</p>
+        <p><strong>Nombre:</strong> {{ producto.nombre }}</p>
+        <p><strong>Número de Serie:</strong> {{ producto.numero_serie }}</p>
+        <p><strong>Stock Actual:</strong> {{ producto.cantidad }}</p>
+        <p><strong>Precio Actual:</strong> ${{ "%.2f"|format(producto.precio) }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Stock Anterior</th>
+                <th>Stock Posterior</th>
+                <th>Precio</th>
+                <th>Usuario</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movimiento in movimientos %}
+            <tr>
+                <td>{{ movimiento.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ movimiento.tipo }}</td>
+                <td>{{ movimiento.cantidad_signo }}{{ movimiento.cantidad }}</td>
+                <td>{{ movimiento.stock_anterior }}</td>
+                <td>{{ movimiento.stock_posterior }}</td>
+                <td>${{ "%.2f"|format(movimiento.precio) }}</td>
+                <td>{{ movimiento.usuario }}</td>
+                <td>{{ movimiento.descripcion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div>
+        <h3>Resumen</h3>
+        <p>Total Entradas: {{ estadisticas.total_entradas }}</p>
+        <p>Total Salidas: {{ estadisticas.total_salidas }}</p>
+        <p>Valor Total: ${{ "%.2f"|format(estadisticas.valor_total) }}</p>
+        <p>Total Movimientos: {{ estadisticas.total_movimientos }}</p>
+    </div>
+</body>
+</html>
