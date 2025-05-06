@@ -5,9 +5,9 @@ def create_connection():
     try:
         connection = mysql.connector.connect(
             host='localhost',        # Tu host
-            database='inventario',   # Nombre de tu base de datos
+            database='inventario',   # Nombre de tu base de datos en mi caso es esta
             user='root',       # Tu usuario
-            password='401387'   # Tu contraseña
+            password=''   # Tu contraseña
         )
         return connection
     except Error as e:
